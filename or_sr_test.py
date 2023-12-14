@@ -43,8 +43,8 @@ def on_hotkey_reverser():
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('a', on_hotkey_regulator)
 keyboard.add_hotkey('d', on_hotkey_regulator)
-keyboard.add_hotkey('w', on_hotkey_regulator)
-keyboard.add_hotkey('s', on_hotkey_regulator)
+keyboard.add_hotkey('w', on_hotkey_reverser)
+keyboard.add_hotkey('s', on_hotkey_reverser)
 
 while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
