@@ -34,7 +34,7 @@ with tolk.tolk():
                 tolk.speak(value)
             if key == "RangeFraction":
                 pct_value = round(value * 100)
-                tolk.speak(pct_value)
+                tolk.speak(str(pct_value))
                 tolk.speak("percent")
 #            else:
 #                print(key, ":", element[key])
