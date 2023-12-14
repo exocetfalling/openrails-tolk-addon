@@ -1,54 +1,72 @@
 import urllib.request, json 
 from cytolk import tolk
 import keyboard
+import time 
 
 is_active = True
 
-cutoff = 0.00
-regulator = 0.00
-firebox = 0.00
-firehole = 0.00
-train_brake = 0.00
-steam_pr = 0.00
-brake_pipe = 0.00
-main_res = 0.00
+cab_controls_dict = {
+    "CUTOFF": 0.00,
+    "REGULATOR": 0.00,
+    "FIREBOX": 0.00,
+    "FIREHOLE": 0.00,
+    "TRAIN_BRAKE": 0.00,
+    "STEAM_PR": 0.00,
+    "BRAKE_PIPE": 0.00,
+    "WHISTLE": 0.00,
+    "ENGINE_BRAKE": 0.00,
+    "MAIN_RES": 0.00,
+}
 
-min_value = 0.00
-max_value = 0.00
-dec_value = 0.00
-pct_value = 0.00
+time_current = 0.00
+time_previous = 0.00
+time_elapsed = 0.00
 
-def on_space():
+def on_hotkey_full(): 
     print('space was pressed')
 
     with tolk.tolk():
-        with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
-            data = json.load(url)
-            data_str = str(data)
-            #data_obj = json.loads(data_str)
-            #print(data)
-        #    print()
+        pass
 
-        # Print data using loop
-        for element in data:
-            for key in element:
-                value = element[key]
-                print(key, ":", value)
-                if key == "TypeName":
-                    if value == "TRAIN_BRAKE":
-                        tolk.speak("TRAIN BRAKE")
-                    elif value == "STEAM_PR":
-                        tolk.speak("STEAM_PRESSURE")
-                    else:
-                        tolk.speak(value)
-                
-                if key == "RangeFraction":
-                    pct_value = round(value * 100)
-                    tolk.speak(str(pct_value))
-                    tolk.speak("percent")
- 
-keyboard.add_hotkey('space', on_space)
+def on_hotkey_regulator(): 
+    with tolk.tolk():
+        tolk.speak("REGULATOR")
+        tolk.speak(str(round(cab_controls_dict["REGULATOR"] * 100)))
+        tolk.speak("percent")
+
+def on_hotkey_reverser(): 
+    with tolk.tolk():
+        tolk.speak("REVERSER")
+        tolk.speak(str(round(cab_controls_dict["CUTOFF"] * 100)))
+        tolk.speak("percent")
+
+keyboard.add_hotkey('ctrl+a', on_hotkey_full)
+keyboard.add_hotkey('a', on_hotkey_regulator)
+keyboard.add_hotkey('d', on_hotkey_regulator)
+keyboard.add_hotkey('w', on_hotkey_regulator)
+keyboard.add_hotkey('s', on_hotkey_regulator)
 
 while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
-    pass
+
+    with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+        data = json.load(url)
+    
+    time_current = time.time()
+    time_elapsed += (time_current - time_previous)
+    time_previous = time_current
+
+
+    if time_elapsed >= 10:
+        print("time")
+
+        # Print data using loop
+        for element in data:
+            cab_controls_dict[element["TypeName"]] = element["RangeFraction"]
+        
+        print("USER DICT:")
+        print(cab_controls_dict)
+
+
+
+        time_elapsed = 0
