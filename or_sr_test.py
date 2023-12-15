@@ -22,6 +22,9 @@ time_current = 0.00
 time_previous = 0.00
 time_elapsed = 0.00
 
+conn_retries = 0
+CONN_RETRIES_MAX = 5
+
 def on_hotkey_full(): 
     print('space was pressed')
 
@@ -50,25 +53,41 @@ keyboard.add_hotkey('s', on_hotkey_reverser)
 
 while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
-
-    with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
-        data = json.load(url)
-    
-    time_current = time.time()
-    time_elapsed += (time_current - time_previous)
-    time_previous = time_current
-
-
-    if time_elapsed >= 0.5:
-        #print("time")
-
-        # Print data using loop
-        for element in data:
-            cab_controls_dict[element["TypeName"]] = element["RangeFraction"]
+    try:
+        with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+            data = json.load(url)
         
-        #print("USER DICT:")
-        #print(cab_controls_dict)
+        time_current = time.time()
+        time_elapsed += (time_current - time_previous)
+        time_previous = time_current
+
+
+        if time_elapsed >= 0.5:
+            #print("time")
+
+            # Print data using loop
+            for element in data:
+                cab_controls_dict[element["TypeName"]] = element["RangeFraction"]
+            
+            #print("USER DICT:")
+            #print(cab_controls_dict)
 
 
 
-        time_elapsed = 0
+            time_elapsed = 0
+    except:
+        print("Error trying to connect.")
+        
+        time_current = time.time()
+        time_elapsed += (time_current - time_previous)
+        time_previous = time_current
+
+        if time_elapsed >= 10:
+            print("Retrying...")
+            conn_retries += 1
+            print("Attempt", conn_retries)
+            time_elapsed = 0
+        
+        if conn_retries >= CONN_RETRIES_MAX:
+            print("Too many connection failures. Exiting...")
+            exit()
