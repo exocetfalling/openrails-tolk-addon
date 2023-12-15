@@ -25,25 +25,23 @@ time_elapsed = 0.00
 conn_retries = 0
 CONN_RETRIES_MAX = 5
 
+# load the library
+tolk.load()
+
 def on_hotkey_full(): 
     print('space was pressed')
 
-    with tolk.tolk():
-        pass
-
 def on_hotkey_regulator(): 
-    with tolk.tolk():
-        tolk.speak("REGULATOR")
-        tolk.speak(str(round(cab_controls_dict["REGULATOR"] * 100)))
-        tolk.speak("percent")
-        print("REGULATOR:", str(round(cab_controls_dict["REGULATOR"] * 100)))
+    tolk.speak("REGULATOR")
+    tolk.speak(str(round(cab_controls_dict["REGULATOR"] * 100)))
+    tolk.speak("percent")
+    print("REGULATOR:", str(round(cab_controls_dict["REGULATOR"] * 100)))
 
-def on_hotkey_reverser(): 
-    with tolk.tolk():
-        tolk.speak("REVERSER")
-        tolk.speak(str(round(cab_controls_dict["CUTOFF"] * 100)))
-        tolk.speak("percent")
-        print("REVERSER:", str(round(cab_controls_dict["CUTOFF"] * 100)))
+def on_hotkey_reverser():
+    tolk.speak("REVERSER")
+    tolk.speak(str(round(cab_controls_dict["CUTOFF"] * 100)))
+    tolk.speak("percent")
+    print("REVERSER:", str(round(cab_controls_dict["CUTOFF"] * 100)))
 
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('a', on_hotkey_regulator)
@@ -55,6 +53,28 @@ while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
     try:
         with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+            print("Attempting to connect.")
+    
+    except:
+        time_current = time.time()
+        time_elapsed += (time_current - time_previous)
+        time_previous = time_current
+
+        if time_elapsed >= 10:
+            print("Error trying to connect.")
+            print("Retrying...")
+            conn_retries += 1
+            print("Attempt", conn_retries)
+            time_elapsed = 0
+        
+        if conn_retries >= CONN_RETRIES_MAX:
+            print("Too many connection failures. Exiting...")
+            tolk.unload()
+            exit()
+    
+    else:
+        with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+            print("Attempting to connect.")
             data = json.load(url)
         
         time_current = time.time()
@@ -75,19 +95,3 @@ while is_active == True:
 
 
             time_elapsed = 0
-    except:
-        print("Error trying to connect.")
-        
-        time_current = time.time()
-        time_elapsed += (time_current - time_previous)
-        time_previous = time_current
-
-        if time_elapsed >= 10:
-            print("Retrying...")
-            conn_retries += 1
-            print("Attempt", conn_retries)
-            time_elapsed = 0
-        
-        if conn_retries >= CONN_RETRIES_MAX:
-            print("Too many connection failures. Exiting...")
-            exit()
