@@ -30,7 +30,7 @@ CONN_RETRIES_MAX = 10
 tolk.load()
 
 def on_hotkey_full(): 
-    print('space was pressed')
+    pass
 
 def on_hotkey_regulator(): 
     tolk.speak("REGULATOR")
