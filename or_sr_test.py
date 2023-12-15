@@ -65,6 +65,12 @@ def on_hotkey_cyl_cocks():
     tolk.speak("percent")
     print("CYLINDER COCKS:", str(round(cab_controls_dict["CYL_COCKS"] * 100)))
 
+def on_hotkey_speed_check():
+    tolk.speak("SPEED")
+    tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
+    tolk.speak("miles per hour")
+    print("SPEED:", str(round(cab_controls_dict["SPEEDOMETER"] * 100)))
+
 def on_hotkey_gear():
     tolk.speak("GEAR")
     tolk.speak(str(round(cab_controls_dict["GEARS"])))
@@ -77,6 +83,7 @@ keyboard.add_hotkey('w', on_hotkey_reverser)
 keyboard.add_hotkey('s', on_hotkey_reverser)
 keyboard.add_hotkey('semicolon', on_hotkey_train_brake)
 keyboard.add_hotkey('apostrophe', on_hotkey_train_brake)
+keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
 
 while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
