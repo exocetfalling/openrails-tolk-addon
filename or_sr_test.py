@@ -44,6 +44,18 @@ def on_hotkey_reverser():
     tolk.speak("percent")
     print("REVERSER:", str(round(cab_controls_dict["CUTOFF"] * 100)))
 
+def on_hotkey_brake():
+    tolk.speak("BRAKE")
+    tolk.speak(str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+    tolk.speak("percent")
+    print("BRAKE:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+
+def on_hotkey_gear():
+    tolk.speak("GEAR")
+    tolk.speak(str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+    tolk.speak("percent")
+    print("GEAR:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('a', on_hotkey_regulator)
 keyboard.add_hotkey('d', on_hotkey_regulator)
