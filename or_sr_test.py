@@ -69,7 +69,7 @@ def on_hotkey_speed_check():
     tolk.speak("SPEED")
     tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
     tolk.speak("miles per hour")
-    print("SPEED:", str(round(cab_controls_dict["SPEEDOMETER"] * 100)))
+    print("SPEED:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
 def on_hotkey_gear():
     tolk.speak("GEAR")
