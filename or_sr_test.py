@@ -33,12 +33,14 @@ def on_hotkey_regulator():
         tolk.speak("REGULATOR")
         tolk.speak(str(round(cab_controls_dict["REGULATOR"] * 100)))
         tolk.speak("percent")
+        print("REGULATOR:", str(round(cab_controls_dict["REGULATOR"] * 100)))
 
 def on_hotkey_reverser(): 
     with tolk.tolk():
         tolk.speak("REVERSER")
         tolk.speak(str(round(cab_controls_dict["CUTOFF"] * 100)))
         tolk.speak("percent")
+        print("REVERSER:", str(round(cab_controls_dict["CUTOFF"] * 100)))
 
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('a', on_hotkey_regulator)
@@ -57,15 +59,15 @@ while is_active == True:
     time_previous = time_current
 
 
-    if time_elapsed >= 10:
-        print("time")
+    if time_elapsed >= 0.5:
+        #print("time")
 
         # Print data using loop
         for element in data:
             cab_controls_dict[element["TypeName"]] = element["RangeFraction"]
         
-        print("USER DICT:")
-        print(cab_controls_dict)
+        #print("USER DICT:")
+        #print(cab_controls_dict)
 
 
 
