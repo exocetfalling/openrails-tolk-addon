@@ -29,6 +29,15 @@ CONN_RETRIES_MAX = 10
 # load the library
 tolk.load()
 
+def get_data():
+    with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+        data = json.load(url)
+
+def map_value_to_range(value_frac, value_max, value_min):
+    value_range = value_max - value_min
+    value_mapped = value_range * value_frac + value_min
+    return value_mapped
+
 def on_hotkey_full(): 
     pass
 
@@ -40,27 +49,34 @@ def on_hotkey_regulator():
 
 def on_hotkey_reverser():
     tolk.speak("REVERSER")
-    tolk.speak(str(round(cab_controls_dict["CUTOFF"] * 100)))
+    tolk.speak(str(round(cab_controls_dict["REVERSER_PLATE"] * 100)))
     tolk.speak("percent")
-    print("REVERSER:", str(round(cab_controls_dict["CUTOFF"] * 100)))
+    print("REVERSER:", str(round(cab_controls_dict["REVERSER_PLATE"] * 100)))
 
-def on_hotkey_brake():
-    tolk.speak("BRAKE")
+def on_hotkey_train_brake():
+    tolk.speak("TRAIN BRAKE")
     tolk.speak(str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
     tolk.speak("percent")
-    print("BRAKE:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+    print("TRAIN BRAKE:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+
+def on_hotkey_cyl_cocks():
+    tolk.speak("CYLINDER COCKS")
+    tolk.speak(str(round(cab_controls_dict["CYL_COCKS"] * 100)))
+    tolk.speak("percent")
+    print("CYLINDER COCKS:", str(round(cab_controls_dict["CYL_COCKS"] * 100)))
 
 def on_hotkey_gear():
     tolk.speak("GEAR")
-    tolk.speak(str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
-    tolk.speak("percent")
-    print("GEAR:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
+    tolk.speak(str(round(cab_controls_dict["GEARS"])))
+    print("GEAR:", str(round(cab_controls_dict["GEARS"])))
 
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('a', on_hotkey_regulator)
 keyboard.add_hotkey('d', on_hotkey_regulator)
 keyboard.add_hotkey('w', on_hotkey_reverser)
 keyboard.add_hotkey('s', on_hotkey_reverser)
+keyboard.add_hotkey('semicolon', on_hotkey_train_brake)
+keyboard.add_hotkey('apostrophe', on_hotkey_train_brake)
 
 while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
@@ -116,7 +132,12 @@ while is_active == True:
 
             # Print data using loop
             for element in data:
-                cab_controls_dict[element["TypeName"]] = element["RangeFraction"]
+                cab_controls_dict[element["TypeName"]] = \
+                    map_value_to_range( \
+                    element["RangeFraction"],
+                    element["MaxValue"] ,
+                    element["MinValue"]
+                    )
             
             #print("USER DICT:")
             #print(cab_controls_dict)
