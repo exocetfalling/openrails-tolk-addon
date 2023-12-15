@@ -22,8 +22,9 @@ time_current = 0.00
 time_previous = 0.00
 time_elapsed = 0.00
 
+conn_success = False
 conn_retries = 0
-CONN_RETRIES_MAX = 5
+CONN_RETRIES_MAX = 10
 
 # load the library
 tolk.load()
@@ -53,30 +54,46 @@ while is_active == True:
     #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
     try:
         with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
-            print("Attempting to connect.")
+            pass
     
     except:
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
 
-        if time_elapsed >= 10:
+        if conn_success == True:
+            conn_success = False
+            print("Connection lost.")
+            tolk.speak("Connection lost.")
+
+        if time_elapsed >= 5:
             print("Error trying to connect.")
-            print("Retrying...")
+            print("Retrying.")
+            tolk.speak("Error trying to connect. Retrying.")
+
             conn_retries += 1
             print("Attempt", conn_retries)
+            tolk.speak("Attempt")
+            tolk.speak(str(conn_retries))
+
             time_elapsed = 0
         
         if conn_retries >= CONN_RETRIES_MAX:
-            print("Too many connection failures. Exiting...")
+            print("Too many connection failures. Exiting script.")
+            tolk.speak("Too many connection failures. Exiting script.")
+
             tolk.unload()
             exit()
     
     else:
         with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
-            print("Attempting to connect.")
             data = json.load(url)
         
+        if conn_success == False:
+            conn_success = True
+            print("Connection success.")
+            tolk.speak("Connection success.")
+
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
