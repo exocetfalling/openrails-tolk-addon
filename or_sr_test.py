@@ -88,6 +88,8 @@ while is_active == True:
             print("Connection success.")
             tolk.output("Connection success.")
 
+            tolk.output("This is confirmed to be the correct version.")
+
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
@@ -110,7 +112,7 @@ while is_active == True:
 
             for key in cab_controls_dict:
                 if cab_controls_dict_prev == {}:
-                    print("Dict empty, populating.")
+                    # print("Dict empty, populating.")
                     cab_controls_dict_prev = cab_controls_dict.copy()
                 if cab_controls_dict[key] != cab_controls_dict_prev[key]:
                     cab_controls_dict_changed[key] = cab_controls_dict[key]
