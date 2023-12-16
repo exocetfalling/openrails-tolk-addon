@@ -19,6 +19,7 @@ CONN_RETRIES_MAX = 10
 
 # load the library
 tolk.load()
+tolk.try_sapi(True)
 
 def get_data():
     with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
@@ -148,6 +149,11 @@ while is_active == True:
                         tolk.speak("NEUTRAL")
                     if value == 2:
                         tolk.speak("FORWARD")
+                if "THROTTLE" in key:
+                    print(key, "->", value * 100)
+                    tolk.speak("THROTTLE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
                     tolk.speak(str(round(value)))
                 if "TRAIN_BRAKE" in key:
                     print(key, "->", value * 100)
