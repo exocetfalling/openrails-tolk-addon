@@ -5,18 +5,7 @@ import time
 
 is_active = True
 
-cab_controls_dict = {
-    "CUTOFF": 0.00,
-    "REGULATOR": 0.00,
-    "FIREBOX": 0.00,
-    "FIREHOLE": 0.00,
-    "TRAIN_BRAKE": 0.00,
-    "STEAM_PR": 0.00,
-    "BRAKE_PIPE": 0.00,
-    "WHISTLE": 0.00,
-    "ENGINE_BRAKE": 0.00,
-    "MAIN_RES": 0.00,
-}
+cab_controls_dict = {}
 
 time_current = 0.00
 time_previous = 0.00
