@@ -94,7 +94,6 @@ while is_active == True:
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
 
-
         if time_elapsed >= 0.5:
             #print("time")
 
@@ -106,9 +105,17 @@ while is_active == True:
                     element["MaxValue"] ,
                     element["MinValue"]
                     )
+            # Debug
+            # print("CAB_CONTROLS_DICT")
+            # print(cab_controls_dict)
+            # print("CAB_CONTROLS_DICT_PREV")
+            # print(cab_controls_dict_prev)
+            # print("CAB_CONTROLS_DICT_CHANGED")
+            # print(cab_controls_dict_changed)
             
             # Purge dictionary of changes for next iteration
             cab_controls_dict_changed = {}
+
 
             for key in cab_controls_dict:
                 if cab_controls_dict_prev == {}:
