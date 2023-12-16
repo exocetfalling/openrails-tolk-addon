@@ -6,6 +6,8 @@ import time
 is_active = True
 
 cab_controls_dict = {}
+cab_controls_dict_prev = {}
+cab_controls_dict_changed = {}
 
 time_current = 0.00
 time_previous = 0.00
@@ -30,48 +32,12 @@ def map_value_to_range(value_frac, value_max, value_min):
 def on_hotkey_full(): 
     pass
 
-def on_hotkey_regulator(): 
-    tolk.speak("REGULATOR")
-    tolk.speak(str(round(cab_controls_dict["REGULATOR"] * 100)))
-    tolk.speak("percent")
-    print("REGULATOR:", str(round(cab_controls_dict["REGULATOR"] * 100)))
-
-def on_hotkey_reverser():
-    tolk.speak("REVERSER")
-    tolk.speak(str(round(cab_controls_dict["REVERSER_PLATE"] * 100)))
-    tolk.speak("percent")
-    print("REVERSER:", str(round(cab_controls_dict["REVERSER_PLATE"] * 100)))
-
-def on_hotkey_train_brake():
-    tolk.speak("TRAIN BRAKE")
-    tolk.speak(str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
-    tolk.speak("percent")
-    print("TRAIN BRAKE:", str(round(cab_controls_dict["TRAIN_BRAKE"] * 100)))
-
-def on_hotkey_cyl_cocks():
-    tolk.speak("CYLINDER COCKS")
-    tolk.speak(str(round(cab_controls_dict["CYL_COCKS"] * 100)))
-    tolk.speak("percent")
-    print("CYLINDER COCKS:", str(round(cab_controls_dict["CYL_COCKS"] * 100)))
-
 def on_hotkey_speed_check():
     tolk.speak("SPEED")
     tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
-    tolk.speak("miles per hour")
     print("SPEED:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
-def on_hotkey_gear():
-    tolk.speak("GEAR")
-    tolk.speak(str(round(cab_controls_dict["GEARS"])))
-    print("GEAR:", str(round(cab_controls_dict["GEARS"])))
-
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
-keyboard.add_hotkey('a', on_hotkey_regulator)
-keyboard.add_hotkey('d', on_hotkey_regulator)
-keyboard.add_hotkey('w', on_hotkey_reverser)
-keyboard.add_hotkey('s', on_hotkey_reverser)
-keyboard.add_hotkey('semicolon', on_hotkey_train_brake)
-keyboard.add_hotkey('apostrophe', on_hotkey_train_brake)
 keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
 
 while is_active == True:
@@ -135,9 +101,52 @@ while is_active == True:
                     element["MinValue"]
                     )
             
-            #print("USER DICT:")
-            #print(cab_controls_dict)
+            # Purge dictionary of changes for next iteration
+            cab_controls_dict_changed = {}
 
+            for key in cab_controls_dict:
+                if cab_controls_dict_prev == {}:
+                    print("Dict empty, populating.")
+                    cab_controls_dict_prev = cab_controls_dict.copy()
+                if cab_controls_dict[key] != cab_controls_dict_prev[key]:
+                    cab_controls_dict_changed[key] = cab_controls_dict[key]
+                
+            cab_controls_dict_prev = cab_controls_dict.copy()
+            
+            # print(cab_controls_dict_changed)
 
+            for key in cab_controls_dict_changed:
+                value = cab_controls_dict_changed[key]
 
+                if "REGULATOR" in key:
+                    print(key, "->", value * 100)
+                    tolk.speak("REGULATOR")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
+                if "REVERSER" in key:
+                    print(key, "->", value * 100)
+                    tolk.speak("REVERSER")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
+                if "COCKS" in key:
+                    if value > 0.5:
+                        print("Cylinder cocks open.")
+                        tolk.speak("Cylinder cocks open.")
+                    else:
+                        print("Cylinder cocks closed.")
+                        tolk.speak("Cylinder cocks closed.")
+                if "GEAR" in key:
+                    print(key, "->", value)
+                    tolk.speak("GEAR")
+                    tolk.speak(str(round(value)))
+                if "TRAIN_BRAKE" in key:
+                    print(key, "->", value * 100)
+                    tolk.speak("TRAIN BRAKE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
+                if "ENGINE_BRAKE" in key:
+                    print(key, "->", value * 100)
+                    tolk.speak("ENGINE BRAKE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
             time_elapsed = 0
