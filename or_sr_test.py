@@ -139,6 +139,16 @@ while is_active == True:
                     print(key, "->", value)
                     tolk.speak("GEAR")
                     tolk.speak(str(round(value)))
+                if "DIRECTION" in key:
+                    print(key, "->", value)
+                    tolk.speak("DIRECTION")
+                    if value == 0:
+                        tolk.speak("REVERSE")
+                    if value == 1:
+                        tolk.speak("NEUTRAL")
+                    if value == 2:
+                        tolk.speak("FORWARD")
+                    tolk.speak(str(round(value)))
                 if "TRAIN_BRAKE" in key:
                     print(key, "->", value * 100)
                     tolk.speak("TRAIN BRAKE")
