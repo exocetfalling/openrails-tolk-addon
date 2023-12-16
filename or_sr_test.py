@@ -33,10 +33,13 @@ def map_value_to_range(value_frac, value_max, value_min):
 def on_hotkey_full(): 
     pass
 
+def on_hotkey_brake_button():
+    tolk.output("EMERGENCY BRAKE")
+
 def on_hotkey_speed_check():
-    tolk.speak("SPEED")
-    tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
-    print("SPEED:", str(round(cab_controls_dict["SPEEDOMETER"])))
+    tolk.output("SPEEDOMETER")
+    tolk.output(str(round(cab_controls_dict["SPEEDOMETER"])))
+    print("SPEEDOMETER:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
 keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
@@ -55,23 +58,23 @@ while is_active == True:
         if conn_success == True:
             conn_success = False
             print("Connection lost.")
-            tolk.speak("Connection lost.")
+            tolk.output("Connection lost.")
 
         if time_elapsed >= 5:
             print("Error trying to connect.")
             print("Retrying.")
-            tolk.speak("Error trying to connect. Retrying.")
+            tolk.output("Error trying to connect. Retrying.")
 
             conn_retries += 1
             print("Attempt", conn_retries)
-            tolk.speak("Attempt")
-            tolk.speak(str(conn_retries))
+            tolk.output("Attempt")
+            tolk.output(str(conn_retries))
 
             time_elapsed = 0
         
         if conn_retries >= CONN_RETRIES_MAX:
             print("Too many connection failures. Exiting script.")
-            tolk.speak("Too many connection failures. Exiting script.")
+            tolk.output("Too many connection failures. Exiting script.")
 
             tolk.unload()
             exit()
@@ -83,7 +86,7 @@ while is_active == True:
         if conn_success == False:
             conn_success = True
             print("Connection success.")
-            tolk.speak("Connection success.")
+            tolk.output("Connection success.")
 
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
@@ -121,48 +124,47 @@ while is_active == True:
 
                 if "REGULATOR" in key:
                     print(key, "->", value * 100)
-                    tolk.speak("REGULATOR")
-                    tolk.speak(str(round(value * 100)))
-                    tolk.speak("Percent")
+                    tolk.output("REGULATOR")
+                    tolk.output(str(round(value * 100)))
+                    tolk.output("Percent")
                 if "REVERSER" in key:
                     print(key, "->", value * 100)
-                    tolk.speak("REVERSER")
-                    tolk.speak(str(round(value * 100)))
-                    tolk.speak("Percent")
+                    tolk.output("REVERSER")
+                    tolk.output(str(round(value * 100)))
+                    tolk.output("Percent")
                 if "COCKS" in key:
                     if value > 0.5:
                         print("Cylinder cocks open.")
-                        tolk.speak("Cylinder cocks open.")
+                        tolk.output("Cylinder cocks open.")
                     else:
                         print("Cylinder cocks closed.")
-                        tolk.speak("Cylinder cocks closed.")
+                        tolk.output("Cylinder cocks closed.")
                 if "GEAR" in key:
                     print(key, "->", value)
-                    tolk.speak("GEAR")
-                    tolk.speak(str(round(value)))
+                    tolk.output("GEAR")
+                    tolk.output(str(round(value)))
                 if "DIRECTION" in key:
                     print(key, "->", value)
-                    tolk.speak("DIRECTION")
+                    tolk.output("DIRECTION")
                     if value == 0:
-                        tolk.speak("REVERSE")
+                        tolk.output("REVERSE")
                     if value == 1:
-                        tolk.speak("NEUTRAL")
+                        tolk.output("NEUTRAL")
                     if value == 2:
-                        tolk.speak("FORWARD")
+                        tolk.output("FORWARD")
                 if "THROTTLE" in key:
                     print(key, "->", value * 100)
-                    tolk.speak("THROTTLE")
-                    tolk.speak(str(round(value * 100)))
-                    tolk.speak("Percent")
-                    tolk.speak(str(round(value)))
+                    tolk.output("THROTTLE")
+                    tolk.output(str(round(value * 100)))
+                    tolk.output("Percent")
                 if "TRAIN_BRAKE" in key:
                     print(key, "->", value * 100)
-                    tolk.speak("TRAIN BRAKE")
-                    tolk.speak(str(round(value * 100)))
-                    tolk.speak("Percent")
+                    tolk.output("TRAIN BRAKE")
+                    tolk.output(str(round(value * 100)))
+                    tolk.output("Percent")
                 if "ENGINE_BRAKE" in key:
                     print(key, "->", value * 100)
-                    tolk.speak("ENGINE BRAKE")
-                    tolk.speak(str(round(value * 100)))
-                    tolk.speak("Percent")
+                    tolk.output("ENGINE BRAKE")
+                    tolk.output(str(round(value * 100)))
+                    tolk.output("Percent")
             time_elapsed = 0
