@@ -33,6 +33,12 @@ CONN_RETRIES_INTERVAL = 5
 tolk.load()
 tolk.try_sapi(True)
 
+# Output start message and version
+print("Script loaded.")
+tolk.output("Script loaded.")
+print("Version 0.1.0.")
+tolk.speak("Version 0.1.0.")
+
 def get_data():
     """Get data from the API."""
     with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
@@ -59,13 +65,19 @@ def on_hotkey_speed_check():
 
 def on_hotkey_exit():
     """Output closing message and exit."""
-    tolk.speak("Exiting script")
+    print("Exiting script.")
     tolk.unload()
+    exit()
+    
 
 # Add a keyboard hotkey for speed checks
 keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
 # Add a keyboard hotkey for exiting
-keyboard.add_hotkey('alt+f4', on_hotkey_exit)
+keyboard.add_hotkey('ctrl+shift+q', on_hotkey_exit)
+
+# Output message prior to trying to connect.
+print("Attempting to connect to Open Rails.")
+tolk.output("Attempting to connect to Open Rails.")
 
 # Main loop
 while is_active == True:
@@ -114,9 +126,6 @@ while is_active == True:
             conn_success = True
             print("Connection success.")
             tolk.speak("Connection success.")
-
-            print("Version 0.1.0.")
-            tolk.speak("Version 0.1.0.")
 
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
