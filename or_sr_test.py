@@ -1,3 +1,7 @@
+"""
+Python script for making Open Rails screen reader friendly using cytolk.
+"""
+
 import urllib.request, json 
 from cytolk import tolk
 import keyboard
@@ -53,9 +57,17 @@ def on_hotkey_speed_check():
     tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
     print("SPEEDOMETER:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
+def on_hotkey_exit():
+    """Output closing message and exit."""
+    tolk.speak("Exiting script")
+    tolk.unload()
+
 # Add a keyboard hotkey for speed checks
 keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
+# Add a keyboard hotkey for exiting
+keyboard.add_hotkey('alt+f4', on_hotkey_exit)
 
+# Main loop
 while is_active == True:
     try:
         # Try loading the API's cab controls URL
@@ -94,7 +106,7 @@ while is_active == True:
             exit()
     
     else:
-        # If connection succeeded
+        # If connection succeeded, proceed as normal
         with urllib.request.urlopen(CAB_CONTROLS_API_URL) as url:
             data = json.load(url)
         
@@ -120,16 +132,18 @@ while is_active == True:
                     element["MinValue"]
                     )
             
-            # Purge dictionary of changes for next iteration
+            # Purge dictionary of changes
             cab_controls_dict_changed = {}
 
-
+            # Compare current and previous data
+            # If values changed, add them to cab_controls_dict_changed
             for key in cab_controls_dict:
                 if cab_controls_dict_prev == {}:
                     cab_controls_dict_prev = cab_controls_dict.copy()
                 if cab_controls_dict[key] != cab_controls_dict_prev[key]:
                     cab_controls_dict_changed[key] = cab_controls_dict[key]
-                
+            
+            # Bring old data up to date 
             cab_controls_dict_prev = cab_controls_dict.copy()
             
             for key in cab_controls_dict_changed:
@@ -184,4 +198,5 @@ while is_active == True:
                     tolk.speak("ENGINE BRAKE")
                     tolk.speak(str(round(value * 100)))
                     tolk.speak("Percent")
+            
             time_elapsed = 0
