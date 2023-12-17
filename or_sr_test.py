@@ -30,15 +30,19 @@ def map_value_to_range(value_frac, value_max, value_min):
     value_mapped = value_range * value_frac + value_min
     return value_mapped
 
+def underscore_to_space(text):
+    text_new = text.replace("_", " ")
+    return text_new
+
 def on_hotkey_full(): 
     pass
 
 def on_hotkey_brake_button():
-    tolk.output("EMERGENCY BRAKE")
+    tolk.speak("EMERGENCY BRAKE")
 
 def on_hotkey_speed_check():
-    tolk.output("SPEEDOMETER")
-    tolk.output(str(round(cab_controls_dict["SPEEDOMETER"])))
+    tolk.speak("SPEEDOMETER")
+    tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
     print("SPEEDOMETER:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
 keyboard.add_hotkey('ctrl+a', on_hotkey_full)
@@ -58,23 +62,23 @@ while is_active == True:
         if conn_success == True:
             conn_success = False
             print("Connection lost.")
-            tolk.output("Connection lost.")
+            tolk.speak("Connection lost.")
 
         if time_elapsed >= 5:
             print("Error trying to connect.")
             print("Retrying.")
-            tolk.output("Error trying to connect. Retrying.")
+            tolk.speak("Error trying to connect. Retrying.")
 
             conn_retries += 1
             print("Attempt", conn_retries)
-            tolk.output("Attempt")
-            tolk.output(str(conn_retries))
+            tolk.speak("Attempt")
+            tolk.speak(str(conn_retries))
 
             time_elapsed = 0
         
         if conn_retries >= CONN_RETRIES_MAX:
             print("Too many connection failures. Exiting script.")
-            tolk.output("Too many connection failures. Exiting script.")
+            tolk.speak("Too many connection failures. Exiting script.")
 
             tolk.unload()
             exit()
@@ -86,15 +90,16 @@ while is_active == True:
         if conn_success == False:
             conn_success = True
             print("Connection success.")
-            tolk.output("Connection success.")
+            tolk.speak("Connection success.")
 
-            tolk.output("This is confirmed to be the correct version.")
+            print("Version 0.0.8.")
+            tolk.speak("Version 0.0.8.")
 
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
 
-        if time_elapsed >= 0.5:
+        if time_elapsed >= 0.25:
             #print("time")
 
             # Print data using loop
@@ -127,53 +132,59 @@ while is_active == True:
             cab_controls_dict_prev = cab_controls_dict.copy()
             
             # print(cab_controls_dict_changed)
-
+            
+            # More debug
+            # tolk.speak("Changes observed.")
+            # for key in cab_controls_dict_changed:
+            #     print(underscore_to_space(str(key)))
+            #     tolk.speak(underscore_to_space(str(key)))
+            
             for key in cab_controls_dict_changed:
                 value = cab_controls_dict_changed[key]
 
                 if "REGULATOR" in key:
                     print(key, "->", value * 100)
-                    tolk.output("REGULATOR")
-                    tolk.output(str(round(value * 100)))
-                    tolk.output("Percent")
+                    tolk.speak("REGULATOR")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
                 if "REVERSER" in key:
                     print(key, "->", value * 100)
-                    tolk.output("REVERSER")
-                    tolk.output(str(round(value * 100)))
-                    tolk.output("Percent")
+                    tolk.speak("REVERSER")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
                 if "COCKS" in key:
                     if value > 0.5:
                         print("Cylinder cocks open.")
-                        tolk.output("Cylinder cocks open.")
+                        tolk.speak("Cylinder cocks open.")
                     else:
                         print("Cylinder cocks closed.")
-                        tolk.output("Cylinder cocks closed.")
+                        tolk.speak("Cylinder cocks closed.")
                 if "GEAR" in key:
                     print(key, "->", value)
-                    tolk.output("GEAR")
-                    tolk.output(str(round(value)))
+                    tolk.speak("GEAR")
+                    tolk.speak(str(round(value)))
                 if "DIRECTION" in key:
                     print(key, "->", value)
-                    tolk.output("DIRECTION")
+                    tolk.speak("DIRECTION")
                     if value == 0:
-                        tolk.output("REVERSE")
+                        tolk.speak("REVERSE")
                     if value == 1:
-                        tolk.output("NEUTRAL")
+                        tolk.speak("NEUTRAL")
                     if value == 2:
-                        tolk.output("FORWARD")
+                        tolk.speak("FORWARD")
                 if "THROTTLE" in key:
                     print(key, "->", value * 100)
-                    tolk.output("THROTTLE")
-                    tolk.output(str(round(value * 100)))
-                    tolk.output("Percent")
+                    tolk.speak("THROTTLE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
                 if "TRAIN_BRAKE" in key:
                     print(key, "->", value * 100)
-                    tolk.output("TRAIN BRAKE")
-                    tolk.output(str(round(value * 100)))
-                    tolk.output("Percent")
+                    tolk.speak("TRAIN BRAKE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
                 if "ENGINE_BRAKE" in key:
                     print(key, "->", value * 100)
-                    tolk.output("ENGINE BRAKE")
-                    tolk.output(str(round(value * 100)))
-                    tolk.output("Percent")
+                    tolk.speak("ENGINE BRAKE")
+                    tolk.speak(str(round(value * 100)))
+                    tolk.speak("Percent")
             time_elapsed = 0
