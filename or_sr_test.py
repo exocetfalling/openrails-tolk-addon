@@ -115,8 +115,8 @@ while is_active == True:
             print("Connection success.")
             tolk.speak("Connection success.")
 
-            print("Version 0.0.8.")
-            tolk.speak("Version 0.0.8.")
+            print("Version 0.1.0.")
+            tolk.speak("Version 0.1.0.")
 
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
