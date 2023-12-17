@@ -3,6 +3,8 @@ Python script to add screen reader support to [Open Rails](https://www.openrails
 Tested with Open Rails version 1.5.1 stable.
 Note that Open Rails forks are not supported, since testing showed them to be unreliable. 
 
+Steam trains are the best supported, other types may or may not work well.
+
 ## Requirements:
 - [keyboard](https://pypi.org/project/keyboard/)
 - [cytolk](https://pypi.org/project/cytolk/0.1.6/)
