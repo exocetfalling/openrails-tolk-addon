@@ -3,68 +3,78 @@ from cytolk import tolk
 import keyboard
 import time 
 
+CAB_CONTROLS_API_URL = "http://localhost:2150/API/CABCONTROLS"
+
+# Currently just True, might change in future
 is_active = True
 
+# Dictionaries for data
 cab_controls_dict = {}
 cab_controls_dict_prev = {}
 cab_controls_dict_changed = {}
 
+# Time variables
 time_current = 0.00
 time_previous = 0.00
 time_elapsed = 0.00
 
+# Connection variables
 conn_success = False
+CONN_INTERVAL = 0.5 
 conn_retries = 0
 CONN_RETRIES_MAX = 10
+CONN_RETRIES_INTERVAL = 5
 
-# load the library
+# Load the library
 tolk.load()
 tolk.try_sapi(True)
 
 def get_data():
+    """Get data from the API."""
     with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
         data = json.load(url)
 
 def map_value_to_range(value_frac, value_max, value_min):
+    """Map from fraction to Open Rails range.
+
+    Converts between the fraction in the API to the in-game displayed value.
+    Note that, for percentages, the returned value must be multiplied by 100.
+    """
     value_range = value_max - value_min
     value_mapped = value_range * value_frac + value_min
     return value_mapped
 
-def underscore_to_space(text):
-    text_new = text.replace("_", " ")
-    return text_new
-
-def on_hotkey_full(): 
-    pass
-
-def on_hotkey_brake_button():
-    tolk.speak("EMERGENCY BRAKE")
-
 def on_hotkey_speed_check():
+    """Output speed displayed by speedometer.
+
+    Outputs speed after rounding the value in cab_controls_dict and converting it to a string.
+    """
     tolk.speak("SPEEDOMETER")
     tolk.speak(str(round(cab_controls_dict["SPEEDOMETER"])))
     print("SPEEDOMETER:", str(round(cab_controls_dict["SPEEDOMETER"])))
 
-keyboard.add_hotkey('ctrl+a', on_hotkey_full)
+# Add a keyboard hotkey for speed checks
 keyboard.add_hotkey('shift+v', on_hotkey_speed_check)
 
 while is_active == True:
-    #with urllib.request.urlopen("http://localhost:2150//API/TRAININFO") as url:
     try:
-        with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+        # Try loading the API's cab controls URL
+        with urllib.request.urlopen(CAB_CONTROLS_API_URL) as url:
             pass
     
     except:
+        # If connection failed
         time_current = time.time()
         time_elapsed += (time_current - time_previous)
         time_previous = time_current
 
+        # If it was connected in the last iteration
         if conn_success == True:
             conn_success = False
             print("Connection lost.")
             tolk.speak("Connection lost.")
 
-        if time_elapsed >= 5:
+        if time_elapsed >= CONN_RETRIES_INTERVAL:
             print("Error trying to connect.")
             print("Retrying.")
             tolk.speak("Error trying to connect. Retrying.")
@@ -84,7 +94,8 @@ while is_active == True:
             exit()
     
     else:
-        with urllib.request.urlopen("http://localhost:2150/API/CABCONTROLS") as url:
+        # If connection succeeded
+        with urllib.request.urlopen(CAB_CONTROLS_API_URL) as url:
             data = json.load(url)
         
         if conn_success == False:
@@ -100,9 +111,7 @@ while is_active == True:
         time_previous = time_current
 
         if time_elapsed >= 0.25:
-            #print("time")
-
-            # Print data using loop
+            # Load data using loop
             for element in data:
                 cab_controls_dict[element["TypeName"]] = \
                     map_value_to_range( \
@@ -110,13 +119,6 @@ while is_active == True:
                     element["MaxValue"] ,
                     element["MinValue"]
                     )
-            # Debug
-            # print("CAB_CONTROLS_DICT")
-            # print(cab_controls_dict)
-            # print("CAB_CONTROLS_DICT_PREV")
-            # print(cab_controls_dict_prev)
-            # print("CAB_CONTROLS_DICT_CHANGED")
-            # print(cab_controls_dict_changed)
             
             # Purge dictionary of changes for next iteration
             cab_controls_dict_changed = {}
@@ -124,24 +126,19 @@ while is_active == True:
 
             for key in cab_controls_dict:
                 if cab_controls_dict_prev == {}:
-                    # print("Dict empty, populating.")
                     cab_controls_dict_prev = cab_controls_dict.copy()
                 if cab_controls_dict[key] != cab_controls_dict_prev[key]:
                     cab_controls_dict_changed[key] = cab_controls_dict[key]
                 
             cab_controls_dict_prev = cab_controls_dict.copy()
             
-            # print(cab_controls_dict_changed)
-            
-            # More debug
-            # tolk.speak("Changes observed.")
-            # for key in cab_controls_dict_changed:
-            #     print(underscore_to_space(str(key)))
-            #     tolk.speak(underscore_to_space(str(key)))
-            
             for key in cab_controls_dict_changed:
                 value = cab_controls_dict_changed[key]
 
+                # If words like these are in the dictionary
+                # We match substrings, not the whole string
+                # This is because different trains have different vars
+                # They usually contain these substrings
                 if "REGULATOR" in key:
                     print(key, "->", value * 100)
                     tolk.speak("REGULATOR")
