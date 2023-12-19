@@ -192,6 +192,13 @@ while is_active == True:
                         tolk.speak("NEUTRAL")
                     if value == 2:
                         tolk.speak("FORWARD")
+                if "PANTOGRAPH" in key:
+                    if value > 0.5:
+                        print("Pantograph up.")
+                        tolk.speak("Pantograph up.")
+                    else:
+                        print("Pantograph down.")
+                        tolk.speak("Pantograph down.")
                 if "THROTTLE" in key:
                     print(key, "->", value * 100)
                     tolk.speak("THROTTLE")
